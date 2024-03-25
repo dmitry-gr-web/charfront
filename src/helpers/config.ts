@@ -1,1 +1,1 @@
-export const socketUrl = 'ws://192.168.0.108:8081'
+export const socketUrl = 'ws://chatserver1.fly.dev:8081/'
