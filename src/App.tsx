@@ -4,13 +4,16 @@ import { Button, Input, Form, type FormProps } from 'antd'
 import { IFieldFormType } from './helpers/types'
 
 function App() {
-  const formValues = useRef<IFieldFormType>({ username: '', password: '' })
+  const formValues = useRef<IFieldFormType>({ username: '', idroom: '' })
   const [enterInChat, setEnterInChat] = useState(false)
   const onFinish: FormProps<IFieldFormType>['onFinish'] = (values) => {
     console.log('Success:', values)
     formValues.current.username = values.username
-    formValues.current.password = values.password
+    formValues.current.idroom = values.idroom
     setEnterInChat(true)
+  }
+  const leaveFromChat = () => {
+    setEnterInChat(false)
   }
   return (
     <>
@@ -28,18 +31,18 @@ function App() {
             <Input placeholder='Имя' />
           </Form.Item>
           <Form.Item<IFieldFormType>
-            name='password'
+            name='idroom'
             rules={[{ required: true, message: 'Введите ID комнаты' }]}
           >
-            <Input
-              maxLength={5}
-              onChange={(e) => e.target.value.replace(/[^0-9]/g, '')}
-              placeholder='ID комнаты'
-            />
+            <Input maxLength={5} placeholder='ID комнаты' />
           </Form.Item>
 
-          <Form.Item >
-            <Button style={{margin:'auto',display:'block'}} type='primary' htmlType='submit'>
+          <Form.Item>
+            <Button
+              style={{ margin: 'auto', display: 'block' }}
+              type='primary'
+              htmlType='submit'
+            >
               Вход в чат
             </Button>
           </Form.Item>
@@ -47,8 +50,9 @@ function App() {
       )}
       {enterInChat && (
         <Chat
+          leaveFromChat={leaveFromChat}
           name={formValues.current.username}
-          room={formValues.current.password}
+          room={formValues.current.idroom}
         />
       )}
     </>

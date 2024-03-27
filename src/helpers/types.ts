@@ -3,18 +3,19 @@ export interface IMessage {
   text: string
   userName: string
   usersLength?: number
+  color: string
   transactionInfo?: ITransactionInfo | undefined
 }
 export interface IMessageText  {
   text: string
   userName: string
-  color: string
+  color: string | ''
   currentName?: string
   transactionInfo?: ITransactionInfo | undefined
 }
 export interface IFieldFormType {
   username: string
-  password: string
+  idroom: string
 }
 export interface ITransactionInfo {
   date: string
@@ -23,6 +24,6 @@ export interface ITransactionInfo {
   walletFrom: string
   walletTo: string
 }
-export interface IUsersColor {
-  [key: string]: string
-}
+// export interface IUsersColor {
+//   [key: string]: string
+// }

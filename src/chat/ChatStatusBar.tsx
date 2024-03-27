@@ -1,10 +1,11 @@
 import React from 'react'
-import { UserOutlined, NumberOutlined } from '@ant-design/icons'
-import { Badge, Tooltip } from 'antd'
-const ChatStatusBar: React.FC<{ count: number; room: string }> = ({
-  room,
-  count
-}) => {
+import { UserOutlined, NumberOutlined, ApiOutlined } from '@ant-design/icons'
+import { Badge, Tooltip, Button } from 'antd'
+const ChatStatusBar: React.FC<{
+  count: number
+  room: string
+  exitRoom: () => void
+}> = ({ room, count, exitRoom }) => {
   return (
     <div className='chat-status-bar'>
       <Tooltip
@@ -13,9 +14,19 @@ const ChatStatusBar: React.FC<{ count: number; room: string }> = ({
       >
         <NumberOutlined /> {room}
       </Tooltip>
-      <div>
-        
-      </div>
+      <Tooltip
+        overlayInnerStyle={{ fontSize: '12px' }}
+        title={`Покинуть комнату`}
+      >
+        <Button
+          size={'small'}
+          onClick={() => {
+            exitRoom()
+          }}
+        >
+          <ApiOutlined />
+        </Button>
+      </Tooltip>
       <div style={{ marginRight: 5 }}>
         <Tooltip
           overlayInnerStyle={{ fontSize: '12px' }}

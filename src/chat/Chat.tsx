@@ -4,27 +4,30 @@ import useWebSocket, { ReadyState } from 'react-use-websocket'
 import ChatStatusBar from './ChatStatusBar'
 import ChatMessageItem from './ChatMessageItem'
 import { socketUrl } from '../helpers/config'
-import { generateColor } from '../helpers/generateColors'
-import { IMessage, IMessageText, IUsersColor } from '../helpers/types'
+import { IMessage, IMessageText, ITransactionInfo } from '../helpers/types'
 import ChatInputs from './ChatInputs'
 import './Chat.scss'
 
-const Chat: React.FC<{ name: string; room: string }> = ({ name, room }) => {
+const Chat: React.FC<{
+  name: string
+  room: string
+  leaveFromChat: () => void
+}> = ({ name, room, leaveFromChat }) => {
   const chatBlock = useRef<HTMLDivElement>(null)
   const [messageApi, contextHolder] = message.useMessage()
   const [messageHistory, setMessageHistory] = useState<IMessageText[]>([])
   const [usersCount, setUsersCount] = useState(0)
   const { lastMessage, sendJsonMessage, readyState } = useWebSocket(socketUrl)
-  const usersColors = useRef<IUsersColor>({})
+
   const info = (text: string) => {
     messageApi.info(text)
   }
   async function wsActions() {
     const json = await lastMessage?.data
-    const { message }: { message: IMessage } = JSON.parse(json || '')
-
+    const message: IMessage = JSON.parse(json || '')
     if (!message) return
-    const { action, userName, usersLength, text, transactionInfo } = message
+    const { action, userName, usersLength, text, transactionInfo, color } =
+      message
     console.log(message)
     if (action === 'joinRoom') {
       info(`Пользователь ${userName} присоиденился к чату`)
@@ -33,28 +36,31 @@ const Chat: React.FC<{ name: string; room: string }> = ({ name, room }) => {
     if (action === 'exitRoom') {
       setUsersCount(usersLength || 0)
     }
-    if (action === 'sendMessage') {
-      if (!usersColors.current[userName]) {
-        usersColors.current[userName] = generateColor()
-      }
-
-      setMessageHistory((prev) => [
-        ...prev,
-        {
-          userName: userName,
-          text: text,
-          color: usersColors.current[userName],
-          transactionInfo: transactionInfo || undefined
-        }
-      ])
-      setTimeout(() => {
-        chatBlock.current
-          ?.querySelector('.chat-message:last-child')
-          ?.scrollIntoView()
-      }, 100)
+    if (action === 'sendMessage' || action === 'history') {
+      addMessage(userName, text, color, transactionInfo)
     }
   }
-
+  const addMessage = (
+    userName: string,
+    text: string,
+    color: string,
+    transactionInfo: ITransactionInfo | undefined
+  ) => {
+    setMessageHistory((prev) => [
+      ...prev,
+      {
+        userName: userName,
+        text: text,
+        color: color,
+        transactionInfo: transactionInfo || undefined
+      }
+    ])
+    setTimeout(() => {
+      chatBlock.current
+        ?.querySelector('.chat-message:last-child')
+        ?.scrollIntoView()
+    }, 100)
+  }
   useEffect(() => {
     if (lastMessage !== null) {
       wsActions()
@@ -62,9 +68,17 @@ const Chat: React.FC<{ name: string; room: string }> = ({ name, room }) => {
   }, [lastMessage])
 
   const handleClickSendMessage = (value: string) => {
-    sendJsonMessage({ action: 'sendMessage', text: value, userName: name })
+    sendJsonMessage({
+      action: 'sendMessage',
+      text: value,
+      userName: name,
+      room
+    })
   }
-
+  const exitRoom = () => {
+    sendJsonMessage({ action: 'exitRoom', userName: name, room })
+    leaveFromChat()
+  }
   useEffect(() => {
     sendJsonMessage({ action: 'joinRoom', userName: name, room })
   }, [])
@@ -83,7 +97,7 @@ const Chat: React.FC<{ name: string; room: string }> = ({ name, room }) => {
   return (
     <div className='chat-block'>
       {contextHolder}
-      <ChatStatusBar count={usersCount} room={room} />
+      <ChatStatusBar exitRoom={exitRoom} count={usersCount} room={room} />
       <div className='chat-body' ref={chatBlock}>
         {messageHistory.map((x, i) => (
           <ChatMessageItem
