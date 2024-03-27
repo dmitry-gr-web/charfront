@@ -89,7 +89,6 @@ const Chat: React.FC<{ name: string; room: string }> = ({ name, room }) => {
           <ChatMessageItem
             text={x.text}
             userName={x.userName}
-            currentName={name}
             color={x.color}
             transactionInfo={x.transactionInfo}
             key={i}

@@ -5,16 +5,13 @@ const ChatMessageItem: React.FC<IMessageText> = ({
   text,
   userName,
   color,
-  currentName,
   transactionInfo
 }) => {
   return (
     <div
       className='chat-message'
       style={{
-        marginLeft: userName === currentName ? 'auto' : '',
-        marginRight: userName !== currentName ? 'auto' : '',
-        textAlign: userName === currentName ? 'right' : 'left'
+        marginRight: 'auto'
       }}
     >
       <span style={{ color }}>{userName}</span>
