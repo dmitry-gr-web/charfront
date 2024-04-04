@@ -39,6 +39,9 @@ const Chat: React.FC<{
     if (action === 'sendMessage' || action === 'history') {
       addMessage(userName, text, color, transactionInfo)
     }
+    if(action === 'getRooms') {
+      console.log({message})
+    }
   }
   const addMessage = (
     userName: string,
@@ -79,6 +82,10 @@ const Chat: React.FC<{
     sendJsonMessage({ action: 'exitRoom', userName: name, room })
     leaveFromChat()
   }
+  const getRooms = () => {
+    sendJsonMessage({ action: 'getRooms',room })
+    // leaveFromChat()
+  }
   useEffect(() => {
     sendJsonMessage({ action: 'joinRoom', userName: name, room })
   }, [])
@@ -94,10 +101,11 @@ const Chat: React.FC<{
   if (connectionStatus === 'Connecting') {
     return <Spin />
   }
+
   return (
     <div className='chat-block'>
       {contextHolder}
-      <ChatStatusBar exitRoom={exitRoom} count={usersCount} room={room} />
+      <ChatStatusBar getRooms={getRooms} exitRoom={exitRoom} count={usersCount} room={room} />
       <div className='chat-body' ref={chatBlock}>
         {messageHistory.map((x, i) => (
           <ChatMessageItem

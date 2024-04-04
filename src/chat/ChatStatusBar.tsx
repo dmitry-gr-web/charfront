@@ -5,7 +5,8 @@ const ChatStatusBar: React.FC<{
   count: number
   room: string
   exitRoom: () => void
-}> = ({ room, count, exitRoom }) => {
+  getRooms: () => void
+}> = ({ room, count, exitRoom, getRooms }) => {
   return (
     <div className='chat-status-bar'>
       <Tooltip
@@ -14,6 +15,7 @@ const ChatStatusBar: React.FC<{
       >
         <NumberOutlined /> {room}
       </Tooltip>
+      <Button onClick={getRooms}>Getrooms</Button>
       <Tooltip
         overlayInnerStyle={{ fontSize: '12px' }}
         title={`Покинуть комнату`}
